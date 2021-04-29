@@ -1,3 +1,4 @@
+#!/usr/bin/python
 from bluepy.btle import Scanner, DefaultDelegate
 import subprocess
 
@@ -91,9 +92,7 @@ def triggerDeviceLockscreenWhenAuthDeviceNoLongerInRange():
 
     # if lastThreeDistanceHistory is not empty it mean auth device was once in range 
     if lastThreeDistanceHistory:
-        status = "LOCKED"
-        print("==> ✘ LOCK device. => Auth Device is out of range...")
-        subprocess.run("loginctl lock-session", shell=True, stdout=subprocess.PIPE)
+        triggerDeviceLockscreen(999, 999)
 
 
 def main():
@@ -101,7 +100,7 @@ def main():
     stop = False
 
     while stop is False:
-        devices = scannerTracking.scan(1.0)  
+        devices = scannerTracking.scan(3.0)  
         isAuthDeviceFound = False
 
         for dev in devices:
