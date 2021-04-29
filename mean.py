@@ -4,10 +4,10 @@ import subprocess
 
 
 status = "LOCKED"
-authDeviceAddress = "mac:address:here"
+authDeviceAddress = ["mac:address:here", "another-device-mac:address:here"]
 minLockDistance = 3.0
 minUnlockDistance = 1.5
-minDistanceHistoryToVerifyB4Lock = 3
+minDistanceHistoryToVerifyB4Lock = 12
 lastThreeDistanceHistory = []
 
 
@@ -100,19 +100,23 @@ def main():
     stop = False
 
     while stop is False:
-        devices = scannerTracking.scan(3.0)  
+        devices = scannerTracking.scan(0.5)  
         isAuthDeviceFound = False
+        nearestDevice = None
 
         for dev in devices:
-            if dev.addr == authDeviceAddress: 
+            if dev.addr in authDeviceAddress: 
                 isAuthDeviceFound = True
-                break
+
+                # Switch to the nearest auth device to advoid far aways problem esp when timeout
+                if not nearestDevice or getdistance(nearestDevice.rssi) > getdistance(dev.rssi): 
+                    nearestDevice = dev
 
         
         if isAuthDeviceFound:
-            distance = getdistance(dev.rssi)
-            recordDistance(distance)
-            triggerDeviceLockscreen(dev.rssi, distance)
+            distance = getdistance(nearestDevice.rssi)
+            recordDistance(getdistance(dev.rssi))
+            triggerDeviceLockscreen(nearestDevice.rssi, getdistance(dev.rssi))
         else:
             triggerDeviceLockscreenWhenAuthDeviceNoLongerInRange()
             

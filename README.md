@@ -7,7 +7,7 @@ sudo pip install bluepy
 
 
 # CONFIG
-- open main.py and add your device's bluetooth mac adress into authDeviceAddress. `authDeviceAddress="xx:xx:xx:xx:xx:xx"`
+- open main.py and add your device's bluetooth mac adress into authDeviceAddress. `authDeviceAddress=["xx:xx:xx:xx:xx:xx", "xx:xx.."]`
 
 
 # PERMISSION
