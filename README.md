@@ -16,3 +16,24 @@ chmod 755 mean.py
 
 # Run
 sudo python mean.py
+
+
+# Service
+```
+[Unit]
+Description=Bluetooth Auth Service
+After=multi-user.target
+
+[Service]
+Environment=PYTHONUNBUFFERED=1
+WorkingDirectory=/home/user/.bash
+User=yourpc
+ExecStart=/usr/bin/python /home/user/.bash/main.py
+Restart=always
+StandardOutput=append:/tmp/bluetooth-auth.log
+# CPUSchedulingPolicy=rr
+# CPUSchedulingPriority=90
+
+[Install]
+WantedBy=multi-user.target
+```

@@ -7,7 +7,7 @@ status = "LOCKED"
 authDeviceAddress = ["mac:address:here", "another-device-mac:address:here"]
 minLockDistance = 3.0
 minUnlockDistance = 1.5
-minDistanceHistoryToVerifyB4Lock = 12
+minDistanceHistoryToVerifyB4Lock = 16
 lastThreeDistanceHistory = []
 
 
@@ -44,19 +44,26 @@ def getCurrentLockscreenStatus():
         # print("Current status: UNLOCKED")
         status = "UNLOCKED"
 
+def getSessionId():
+    # result = subprocess.run("loginctl session-status | grep \"$whoami\" | head -n1 | awk '{print $1;}'", shell=True, stdout=subprocess.PIPE)
+    result = subprocess.run("loginctl | grep \"$whoami\" | head -n2 | awk 'FNR == 2 {print $1}'", shell=True, stdout=subprocess.PIPE)
+    return result.stdout.decode("utf-8")
+
 
 
 def triggerDeviceLockscreen(rssi, distance): 
     global status
     getCurrentLockscreenStatus()
+
+    sessionId = str(getSessionId())
     if distance >= minLockDistance and status == "UNLOCKED" and isAuthDeviceReallyFarAway():
         status = "LOCKED"
         print("==> ✘ LOCK device. => Distance=%f m" % distance)
-        subprocess.run("loginctl lock-session", shell=True, stdout=subprocess.PIPE)
+        subprocess.run("loginctl lock-session " + sessionId, shell=True, stdout=subprocess.PIPE)
     elif distance <= minUnlockDistance and status == "LOCKED":
         print("==> ✓ UNLOCK device. => Distance=%f m" % distance)
         status = "UNLOCKED"
-        subprocess.run("loginctl unlock-session", shell=True, stdout=subprocess.PIPE)
+        subprocess.run("loginctl unlock-session " + sessionId, shell=True, stdout=subprocess.PIPE)
     else:
         print("Status=%s, RSSI=%d dB, Distance=%f m" % (status, rssi, distance))
     
@@ -92,6 +99,7 @@ def triggerDeviceLockscreenWhenAuthDeviceNoLongerInRange():
 
     # if lastThreeDistanceHistory is not empty it mean auth device was once in range 
     if lastThreeDistanceHistory:
+        recordDistance(999)
         triggerDeviceLockscreen(999, 999)
 
 
@@ -100,7 +108,7 @@ def main():
     stop = False
 
     while stop is False:
-        devices = scannerTracking.scan(0.5)  
+        devices = scannerTracking.scan(0.75)  
         isAuthDeviceFound = False
         nearestDevice = None
 
