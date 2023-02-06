@@ -11,12 +11,12 @@ sudo pip install bluepy
 
 
 # PERMISSION
-chmod 600 mean.py
-chown root:root mean.py
+chmod 600 main.py
+chown root:root main.py
 
 
 # Run
-sudo python mean.py
+sudo python main.py
 
 
 # Service
