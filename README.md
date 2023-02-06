@@ -20,6 +20,7 @@ sudo python main.py
 
 
 # Service
+Create a systemd service at: `/etc/systemd/system/ble-unlock-kde.service` and edit file path and user accordingly
 ```
 [Unit]
 Description=Bluetooth Auth Service

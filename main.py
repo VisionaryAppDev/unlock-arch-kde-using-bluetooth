@@ -63,8 +63,6 @@ class ScanDelegate(DefaultDelegate):
                 if self.counter >= 12:
                     self.counter = 0
                     triggerDeviceLockscreen("LOCK")
-        elif (datetime.datetime.now() - self.last_seen_at) < datetime.timedelta(seconds=8):
-            print("Device status %s, not found for at %s seconds", datetime.datetime.now() - self.last_seen_at, " second")
         elif (datetime.datetime.now() - self.last_seen_at) >= datetime.timedelta(seconds=12):
             self.counter = 0
             self.last_seen_at = datetime.datetime.now()
