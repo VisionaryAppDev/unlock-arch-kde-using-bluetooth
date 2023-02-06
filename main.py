@@ -25,16 +25,16 @@ def triggerDeviceLockscreen(command):
     session_id = get_session_id()
 
     if pc_lockscreen_status == "UNLOCKED" and command == "LOCK":
-        print("==> ✘ LOCK device.")
+        print("[%s] ==> ✘ LOCK device." % datetime.datetime.now())
         subprocess.run("loginctl lock-session " + session_id, shell=True, stdout=subprocess.PIPE)
     elif pc_lockscreen_status == "LOCKED" and command == "UNLOCK":
-        print("==> ✓ UNLOCK device.")
+        print("[%s] ==> ✓ UNLOCK device." % datetime.datetime.now())
         subprocess.run("loginctl unlock-session " + session_id, shell=True, stdout=subprocess.PIPE)
     
 
 
 class ScanDelegate(DefaultDelegate):
-    def __init__(self, ble_mac_addresses, distance_threshold_in_meter=2):
+    def __init__(self, ble_mac_addresses, distance_threshold_in_meter=1.2):
         DefaultDelegate.__init__(self)
         self.ble_mac_addresses = ble_mac_addresses
         self.distance_threshold_in_meter = distance_threshold_in_meter
@@ -63,11 +63,11 @@ class ScanDelegate(DefaultDelegate):
                 if self.counter >= 12:
                     self.counter = 0
                     triggerDeviceLockscreen("LOCK")
-        elif (datetime.datetime.now() - self.last_seen_at) >= datetime.timedelta(seconds=12):
+        elif (datetime.datetime.now() - self.last_seen_at) >= datetime.timedelta(seconds=10):
+            print("[%s] Device status %s, not found for %s" % (datetime.datetime.now(), pc_lockscreen_status, datetime.datetime.now() - self.last_seen_at))
             self.counter = 0
             self.last_seen_at = datetime.datetime.now()
 
-            print("Device status %s, not found for %sm", datetime.datetime.now() - self.last_seen_at, " second")
             triggerDeviceLockscreen("LOCK")
 
 
